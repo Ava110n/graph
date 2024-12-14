@@ -1,0 +1,37 @@
+import networkx as nx
+import numpy as np
+import matplotlib.pyplot as plt
+
+def main():
+    n = 5
+    k = 1
+    g = nx.Graph()
+    while True:
+        for i in range(n):
+            for j in range(i+1,n):
+                if np.random.random() > 0.4:
+                    g.add_edge(i, j, weight = np.random.randint(10,100))
+        if(nx.is_connected(g) and len(g.nodes)==n):
+            break
+    pos = nx.spring_layout(g)
+
+    fig, ax = plt.subplots(3)
+    labels = nx.get_edge_attributes(g, 'weight')
+    nx.draw_networkx_edge_labels(g, pos = pos, edge_labels = labels, ax = ax[0])
+    nx.draw(g, pos = pos, ax = ax[0])
+
+
+    minimal_spanning_tree = nx.minimum_spanning_tree(g)
+    labels_minimal = nx.get_edge_attributes(minimal_spanning_tree, 'weight')
+    nx.draw(minimal_spanning_tree, pos = pos, edge_color = "red", ax = ax[1])
+    nx.draw_networkx_edge_labels(minimal_spanning_tree, pos = pos, edge_labels = labels, ax = ax[1])
+
+    sorted_labels = sorted(labels_minimal.items(), key = lambda item: item[1])[::-1]
+    for i in range(k):
+        minimal_spanning_tree.remove_edge(sorted_labels[i][0][0], sorted_labels[i][0][1])
+    nx.draw(minimal_spanning_tree, pos = pos, edge_color = "green", ax = ax[2])
+    plt.show()
+
+
+if __name__ == '__main__':
+    main()
